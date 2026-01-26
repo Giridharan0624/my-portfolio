@@ -15,7 +15,7 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {/* Brand */}
                     <div>
-                        <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+                        <h3 className="text-2xl font-bold bg-gradient-to-r from-red-600 to-black bg-clip-text text-transparent mb-4">
                             Portfolio
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400">
@@ -28,17 +28,17 @@ export default function Footer() {
                         <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Quick Links</h4>
                         <ul className="space-y-2">
                             <li>
-                                <Link href="/about" className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors">
+                                <Link href="/about" className="text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors">
                                     About
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/projects" className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors">
+                                <Link href="/projects" className="text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors">
                                     Projects
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/contact" className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors">
+                                <Link href="/contact" className="text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors">
                                     Contact
                                 </Link>
                             </li>

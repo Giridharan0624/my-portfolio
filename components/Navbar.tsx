@@ -11,7 +11,6 @@ export default function Navbar() {
         { href: '/about', label: 'About' },
         { href: '/projects', label: 'Projects' },
         { href: '/contact', label: 'Contact' },
-        { href: '/dashboard', label: 'Dashboard' },
     ];
 
     return (
@@ -19,7 +18,7 @@ export default function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
-                    <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-red-600 to-black bg-clip-text text-transparent">
                         GIRIDHARAN S
                     </Link>
 
@@ -29,7 +28,7 @@ export default function Navbar() {
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className="text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors font-medium"
+                                className="text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400 transition-colors font-medium"
                             >
                                 {link.label}
                             </Link>

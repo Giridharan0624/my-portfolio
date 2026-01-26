@@ -110,7 +110,7 @@ export default function Dashboard() {
 
     if (!user) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-black dark:to-purple-900 py-20">
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-black dark:from-gray-900 dark:via-black dark:to-red-900 py-20">
                 <div className="max-w-md w-full mx-4">
                     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
                         <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
@@ -128,7 +128,7 @@ export default function Dashboard() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
                                     placeholder="admin@example.com"
                                 />
                             </div>
@@ -143,7 +143,7 @@ export default function Dashboard() {
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
                                     placeholder="••••••••"
                                 />
                             </div>
@@ -156,7 +156,7 @@ export default function Dashboard() {
 
                             <button
                                 type="submit"
-                                className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all"
+                                className="w-full px-6 py-3 bg-gradient-to-r from-red-600 to-black text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-red-600/50 transition-all"
                             >
                                 Sign In
                             </button>
@@ -192,7 +192,7 @@ export default function Dashboard() {
                 <div className="mb-8">
                     <button
                         onClick={() => setShowAddForm(!showAddForm)}
-                        className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all"
+                        className="px-6 py-3 bg-gradient-to-r from-red-600 to-black text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-red-600/50 transition-all"
                     >
                         {showAddForm ? 'Cancel' : '+ Add New Project'}
                     </button>
@@ -292,7 +292,7 @@ export default function Dashboard() {
                                             {project.tech.map((tech, index) => (
                                                 <span
                                                     key={index}
-                                                    className="px-2 py-1 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded"
+                                                    className="px-2 py-1 text-xs bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 rounded"
                                                 >
                                                     {tech}
                                                 </span>

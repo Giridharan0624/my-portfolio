@@ -7,7 +7,7 @@ export default function About() {
                     <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
                         About Me
                     </h1>
-                    <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto"></div>
+                    <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-black mx-auto"></div>
                 </div>
 
                 {/* Content */}
@@ -43,7 +43,7 @@ export default function About() {
                             ].map((skill) => (
                                 <div
                                     key={skill}
-                                    className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-center font-medium text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900 transition-colors"
+                                    className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-center font-medium text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors border border-red-600/20"
                                 >
                                     {skill}
                                 </div>
@@ -57,7 +57,7 @@ export default function About() {
                             💼 Experience
                         </h2>
                         <div className="space-y-6">
-                            <div className="border-l-4 border-blue-600 pl-6">
+                            <div className="border-l-4 border-red-600 pl-6">
                                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                                     Full Stack Developer
                                 </h3>
@@ -70,7 +70,7 @@ export default function About() {
                                 </p>
                             </div>
 
-                            <div className="border-l-4 border-purple-600 pl-6">
+                            <div className="border-l-4 border-black pl-6">
                                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                                     Frontend Developer
                                 </h3>
@@ -90,7 +90,7 @@ export default function About() {
                         <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
                             🎓 Education
                         </h2>
-                        <div className="border-l-4 border-green-600 pl-6">
+                        <div className="border-l-4 border-red-800 pl-6">
                             <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                                 Bachelor of Computer Science
                             </h3>

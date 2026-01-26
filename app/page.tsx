@@ -40,7 +40,7 @@ export default async function Home() {
               <div className="text-center mt-12">
                 <Link
                   href="/projects"
-                  className="inline-block px-8 py-4 border-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 font-semibold rounded-full hover:bg-blue-600 hover:text-white dark:hover:bg-blue-400 dark:hover:text-black transition-all duration-300"
+                  className="inline-block px-8 py-4 border-2 border-red-600 text-red-600 dark:text-red-400 dark:border-red-400 font-semibold rounded-full hover:bg-red-600 hover:text-white dark:hover:bg-red-400 dark:hover:text-black transition-all duration-300"
                 >
                   View All Projects
                 </Link>
@@ -53,7 +53,7 @@ export default async function Home() {
               </p>
               <Link
                 href="/dashboard"
-                className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="inline-block px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
                 Go to Dashboard
               </Link>

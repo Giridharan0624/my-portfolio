@@ -2,7 +2,7 @@ import ContactForm from '@/components/ContactForm';
 
 export default function Contact() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-black dark:to-purple-900 py-20">
+        <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-black dark:from-gray-900 dark:via-black dark:to-red-900 py-20">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="text-center mb-16">
@@ -12,7 +12,7 @@ export default function Contact() {
                     <p className="text-lg text-gray-600 dark:text-gray-400">
                         Have a question or want to work together? I'd love to hear from you!
                     </p>
-                    <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto mt-6"></div>
+                    <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-black mx-auto mt-6"></div>
                 </div>
 
                 {/* Contact Form */}

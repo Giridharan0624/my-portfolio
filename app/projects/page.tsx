@@ -21,7 +21,7 @@ export default async function Projects() {
                     <p className="text-lg text-gray-600 dark:text-gray-400">
                         A collection of my recent work and side projects
                     </p>
-                    <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto mt-6"></div>
+                    <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-black mx-auto mt-6"></div>
                 </div>
 
                 {/* Projects Grid */}

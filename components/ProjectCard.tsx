@@ -38,7 +38,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                     {project.tech.map((tech, index) => (
                         <span
                             key={index}
-                            className="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full"
+                            className="px-3 py-1 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 rounded-full"
                         >
                             {tech}
                         </span>
