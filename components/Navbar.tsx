@@ -38,7 +38,7 @@ export default function Navbar() {
                     {/* Mobile Menu Button */}
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className="md:hidden p-2 text-white hover:bg-zinc-900 rounded-lg transition-colors"
+                        className="md:hidden p-2 text-white hover:bg-zinc-900 rounded-xl transition-colors"
                         aria-label="Toggle menu"
                     >
                         <svg
@@ -74,7 +74,7 @@ export default function Navbar() {
                                 key={link.href}
                                 href={link.href}
                                 onClick={() => setIsMenuOpen(false)}
-                                className="block px-4 py-3 text-gray-400 hover:text-white hover:bg-zinc-900 font-bold uppercase text-sm tracking-wider transition-colors"
+                                className="block px-4 py-3 text-gray-400 hover:text-white hover:bg-zinc-900 font-bold uppercase text-sm tracking-wider transition-colors rounded-xl mx-2"
                             >
                                 {link.label}
                             </Link>

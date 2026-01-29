@@ -18,9 +18,7 @@ export default function About({ id }: { id?: string }) {
                             <span className="text-red-500">01.</span> INTRODUCTION
                         </h3>
                         <p className="text-lg text-gray-300 leading-relaxed font-light">
-                            I'm a passionate <span className="text-white font-medium">Full Stack Developer</span> with a love for creating beautiful,
-                            functional web applications. With expertise in modern web technologies,
-                            I specialize in building scalable solutions that solve real-world problems.
+                            I’m an aspiring <span className="text-white font-medium">software developer</span> who builds mobile, desktop, and web applications with a strong focus on creating practical, user-friendly solutions. I enjoy working across the full development lifecycle—from planning and design to coding, testing, and deployment—using both manual development techniques and AI-integrated workflows to improve efficiency and innovation. Driven by curiosity and continuous learning, I’m always exploring new technologies and best practices to craft reliable, scalable, and impactful software.
                         </p>
                     </article>
 

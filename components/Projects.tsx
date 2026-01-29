@@ -37,12 +37,6 @@ export default function Projects({ id, projects }: ProjectsProps) {
                         <p className="text-gray-400 mb-8 max-w-md mx-auto">
                             Projects will appear here once they're added to the database.
                         </p>
-                        <Link
-                            href="/dashboard"
-                            className="inline-block px-8 py-3 bg-red-600 text-white font-bold tracking-wider hover:bg-red-700 transition-colors uppercase"
-                        >
-                            Go to Dashboard
-                        </Link>
                     </div>
                 )}
             </div>

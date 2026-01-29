@@ -7,7 +7,7 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project }: ProjectCardProps) {
     return (
-        <div className="group bg-zinc-900 border border-zinc-800 hover:border-red-600 transition-all duration-300 hover:-translate-y-2">
+        <div className="group bg-zinc-900 border border-zinc-800 hover:border-red-600 transition-all duration-300 hover:-translate-y-2 rounded-3xl overflow-hidden">
             {/* Project Image */}
             <div className="relative h-48 w-full overflow-hidden bg-black">
                 {project.image ? (
@@ -26,12 +26,12 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                 <div className="absolute inset-0 bg-red-900/80 opacity-0 group-hover:opacity-90 transition-opacity duration-300 flex items-center justify-center">
                     <div className="flex gap-4">
                         {project.github && (
-                            <a href={project.github} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-black text-white font-bold uppercase text-xs tracking-wider border border-white hover:bg-white hover:text-black transition-colors">
+                            <a href={project.github} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-black text-white font-bold uppercase text-xs tracking-wider border border-white rounded-lg hover:bg-white hover:text-black transition-colors">
                                 Code
                             </a>
                         )}
                         {project.demo && (
-                            <a href={project.demo} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-white text-black font-bold uppercase text-xs tracking-wider border border-white hover:bg-transparent hover:text-white transition-colors">
+                            <a href={project.demo} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-white text-black font-bold uppercase text-xs tracking-wider border border-white rounded-lg hover:bg-transparent hover:text-white transition-colors">
                                 Demo
                             </a>
                         )}

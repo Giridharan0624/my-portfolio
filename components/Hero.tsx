@@ -55,34 +55,18 @@ export default function Hero() {
                         <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start items-center">
                             <Link
                                 href="/#projects"
-                                className="px-8 py-4 bg-red-600 text-white font-bold rounded-none hover:bg-red-700 transition-all duration-300 shadow-[0_0_20px_rgba(255,0,0,0.4)] hover:shadow-[0_0_30px_rgba(255,0,0,0.6)] uppercase tracking-widest"
+                                className="px-8 py-4 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all duration-300 shadow-[0_0_20px_rgba(255,0,0,0.4)] hover:shadow-[0_0_30px_rgba(255,0,0,0.6)] uppercase tracking-widest"
                             >
                                 View Work
                             </Link>
                             <Link
                                 href="/#contact"
-                                className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-none hover:bg-white hover:text-black transition-all duration-300 uppercase tracking-widest"
+                                className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white hover:text-black transition-all duration-300 uppercase tracking-widest"
                             >
                                 Contact Me
                             </Link>
                         </div>
 
-                        {/* Skills/Tech Stack */}
-                        <div className="mt-20">
-                            <p className="text-red-500 text-sm font-bold uppercase tracking-widest mb-6">
-                                Tech Stack
-                            </p>
-                            <div className="flex flex-wrap justify-center lg:justify-start gap-3">
-                                {['React', 'Next.js', 'TypeScript', 'Firebase', 'Tailwind', 'Node.js'].map((tech) => (
-                                    <span
-                                        key={tech}
-                                        className="px-4 py-2 bg-zinc-900 text-gray-300 border border-zinc-800 hover:border-red-600 hover:text-white transition-colors uppercase text-sm font-bold tracking-wider"
-                                    >
-                                        {tech}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
