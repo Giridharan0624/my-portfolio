@@ -35,6 +35,24 @@ export interface Skill {
     createdAt: Timestamp;
 }
 
+export interface Experience {
+    id?: string;
+    role: string;
+    company: string;
+    period: string;
+    description: string;
+    createdAt: Timestamp;
+}
+
+export interface Education {
+    id?: string;
+    degree: string;
+    school: string;
+    period: string;
+    description: string;
+    createdAt: Timestamp;
+}
+
 // Projects CRUD
 export const getProjects = async (): Promise<Project[]> => {
     try {
@@ -144,4 +162,48 @@ export const deleteSkill = async (skillId: string): Promise<void> => {
         console.error('Error deleting skill:', error);
         throw error;
     }
+};
+
+// Experience CRUD
+export const getExperiences = async (): Promise<Experience[]> => {
+    const q = query(collection(db, 'experiences'), orderBy('createdAt', 'desc'));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    } as Experience));
+};
+
+export const addExperience = async (experience: Omit<Experience, 'id' | 'createdAt'>): Promise<string> => {
+    const docRef = await addDoc(collection(db, 'experiences'), {
+        ...experience,
+        createdAt: Timestamp.now()
+    });
+    return docRef.id;
+};
+
+export const deleteExperience = async (experienceId: string): Promise<void> => {
+    await deleteDoc(doc(db, 'experiences', experienceId));
+};
+
+// Education CRUD
+export const getEducations = async (): Promise<Education[]> => {
+    const q = query(collection(db, 'educations'), orderBy('createdAt', 'desc'));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    } as Education));
+};
+
+export const addEducation = async (education: Omit<Education, 'id' | 'createdAt'>): Promise<string> => {
+    const docRef = await addDoc(collection(db, 'educations'), {
+        ...education,
+        createdAt: Timestamp.now()
+    });
+    return docRef.id;
+};
+
+export const deleteEducation = async (educationId: string): Promise<void> => {
+    await deleteDoc(doc(db, 'educations', educationId));
 };

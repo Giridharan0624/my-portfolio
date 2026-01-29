@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, FormEvent } from 'react';
-import { onAuthChange, signIn, signOut } from '@/firebase/auth';
+import { onAuthChange, signIn, signOut, useAuth } from '@/firebase/auth';
 import {
     getProjects,
     addProject,
@@ -13,19 +13,30 @@ import {
     getSkills,
     addSkill,
     deleteSkill,
-    Skill
+    Skill,
+    Experience,
+    getExperiences,
+    addExperience,
+    deleteExperience,
+    Education,
+    getEducations,
+    addEducation,
+    deleteEducation
 } from '@/firebase/projects';
-import { User } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
+import { Timestamp } from 'firebase/firestore';
 
 export default function Dashboard() {
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'projects' | 'messages' | 'skills'>('projects');
+    const { currentUser, loading } = useAuth();
+    const router = useRouter();
+    const [activeTab, setActiveTab] = useState<'projects' | 'messages' | 'skills' | 'experience' | 'education'>('projects');
 
     // Data
     const [projects, setProjects] = useState<Project[]>([]);
     const [messages, setMessages] = useState<Message[]>([]);
     const [skills, setSkills] = useState<Skill[]>([]);
+    const [experiences, setExperiences] = useState<Experience[]>([]);
+    const [educations, setEducations] = useState<Education[]>([]);
 
     // UI State
     const [showAddForm, setShowAddForm] = useState(false);
@@ -49,20 +60,34 @@ export default function Dashboard() {
     // Add skill form
     const [newSkill, setNewSkill] = useState('');
 
+    // Add experience form
+    const [newExperience, setNewExperience] = useState({
+        role: '',
+        company: '',
+        period: '',
+        description: '',
+    });
+
+    // Add education form
+    const [newEducation, setNewEducation] = useState({
+        degree: '',
+        school: '',
+        period: '',
+        description: '',
+    });
+
     useEffect(() => {
-        const unsubscribe = onAuthChange((currentUser) => {
-            setUser(currentUser);
-            setLoading(false);
-
-            if (currentUser) {
-                loadProjects();
-                loadMessages();
-                loadSkills();
-            }
-        });
-
-        return () => unsubscribe();
-    }, []);
+        if (!loading && !currentUser) {
+            router.push('/login');
+        }
+        if (currentUser) {
+            loadProjects();
+            loadMessages();
+            loadSkills();
+            loadExperiences();
+            loadEducations();
+        }
+    }, [currentUser, loading, router]);
 
     const loadProjects = async () => {
         try {
@@ -91,6 +116,24 @@ export default function Dashboard() {
         }
     };
 
+    const loadExperiences = async () => {
+        try {
+            const fetchedExperiences = await getExperiences();
+            setExperiences(fetchedExperiences);
+        } catch (error) {
+            console.error('Error loading experiences:', error);
+        }
+    };
+
+    const loadEducations = async () => {
+        try {
+            const fetchedEducations = await getEducations();
+            setEducations(fetchedEducations);
+        } catch (error) {
+            console.error('Error loading educations:', error);
+        }
+    };
+
     const handleLogin = async (e: FormEvent) => {
         e.preventDefault();
         setLoginError('');
@@ -110,6 +153,9 @@ export default function Dashboard() {
             await signOut();
             setProjects([]);
             setMessages([]);
+            setSkills([]);
+            setExperiences([]);
+            setEducations([]);
         } catch (error) {
             console.error('Error logging out:', error);
         }
@@ -178,13 +224,63 @@ export default function Dashboard() {
     };
 
     const handleDeleteSkill = async (skillId: string) => {
-        if (!confirm('Are you sure you want to delete this skill?')) return;
+        if (confirm('Are you sure you want to delete this skill?')) {
+            try {
+                await deleteSkill(skillId);
+                loadSkills();
+            } catch (error) {
+                console.error('Error deleting skill:', error);
+            }
+        }
+    };
 
+    const handleAddExperience = async (e: FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
         try {
-            await deleteSkill(skillId);
-            loadSkills();
+            await addExperience(newExperience);
+            setNewExperience({ role: '', company: '', period: '', description: '' });
+            loadExperiences();
         } catch (error) {
-            console.error('Error deleting skill:', error);
+            console.error('Error adding experience:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleDeleteExperience = async (id: string) => {
+        if (confirm('Are you sure you want to delete this experience?')) {
+            try {
+                await deleteExperience(id);
+                loadExperiences();
+            } catch (error) {
+                console.error('Error deleting experience:', error);
+            }
+        }
+    };
+
+    const handleAddEducation = async (e: FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        try {
+            await addEducation(newEducation);
+            setNewEducation({ degree: '', school: '', period: '', description: '' });
+            loadEducations();
+        } catch (error) {
+            console.error('Error adding education:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleDeleteEducation = async (id: string) => {
+        if (confirm('Are you sure you want to delete this education?')) {
+            try {
+                await deleteEducation(id);
+                loadEducations();
+            } catch (error) {
+                console.error('Error deleting education:', error);
+            }
         }
     };
 
@@ -196,7 +292,7 @@ export default function Dashboard() {
         );
     }
 
-    if (!user) {
+    if (!currentUser) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-black py-20 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-900/20 via-black to-black opacity-50"></div>
@@ -271,7 +367,7 @@ export default function Dashboard() {
                             Admin <span className="text-red-600">Dashboard</span>
                         </h1>
                         <p className="text-gray-400 font-medium">
-                            Logged in as <span className="text-red-500">{user.email}</span>
+                            Logged in as <span className="text-red-500">{currentUser.email}</span>
                         </p>
                     </div>
                     <button
@@ -304,17 +400,26 @@ export default function Dashboard() {
                     </button>
                     <button
                         onClick={() => setActiveTab('skills')}
-                        className={`px-8 py-4 rounded-xl font-black uppercase tracking-widest transition-all ${activeTab === 'skills'
-                            ? 'bg-red-600 text-white shadow-[0_0_20px_rgba(255,0,0,0.3)]'
-                            : 'bg-zinc-900 text-gray-400 border border-zinc-800 hover:border-red-600'
-                            }`}
+                        className={`px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-sm transition-all duration-300 ${activeTab === 'skills' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'bg-zinc-900/50 text-gray-400 hover:text-white border border-zinc-800'}`}
                     >
                         Skills
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('experience')}
+                        className={`px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-sm transition-all duration-300 ${activeTab === 'experience' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'bg-zinc-900/50 text-gray-400 hover:text-white border border-zinc-800'}`}
+                    >
+                        Experience
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('education')}
+                        className={`px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-sm transition-all duration-300 ${activeTab === 'education' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'bg-zinc-900/50 text-gray-400 hover:text-white border border-zinc-800'}`}
+                    >
+                        Education
                     </button>
                 </div>
 
                 {/* Tab Content */}
-                {activeTab === 'projects' ? (
+                {activeTab === 'projects' && (
                     <div className="space-y-8 animate-in fade-in duration-500">
                         {/* Add Project Section */}
                         <div className="bg-zinc-900/30 border border-zinc-900 p-8 rounded-3xl">
@@ -446,7 +551,9 @@ export default function Dashboard() {
                             )}
                         </div>
                     </div>
-                ) : activeTab === 'messages' ? (
+                )}
+
+                {activeTab === 'messages' && (
                     <div className="space-y-8 animate-in fade-in duration-500">
                         {/* Messages Header */}
                         <div className="flex justify-between items-center mb-6">
@@ -499,7 +606,9 @@ export default function Dashboard() {
                             )}
                         </div>
                     </div>
-                ) : (
+                )}
+
+                {activeTab === 'skills' && (
                     <div className="space-y-8 animate-in fade-in duration-500">
                         {/* Skills Header */}
                         <div className="flex justify-between items-center mb-6">
@@ -546,6 +655,150 @@ export default function Dashboard() {
                             ) : (
                                 <div className="col-span-full text-center py-20 bg-zinc-900/10 border border-zinc-900 border-dashed rounded-3xl">
                                     <p className="text-zinc-600 font-bold uppercase tracking-widest">No skills added yet</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'experience' && (
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        {/* Add Experience Form */}
+                        <form onSubmit={handleAddExperience} className="bg-zinc-950 p-8 rounded-3xl border border-zinc-900 shadow-2xl space-y-6">
+                            <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                                <span className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-sm">➕</span>
+                                Add New Experience
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <input
+                                    type="text"
+                                    placeholder="Role (e.g., Full Stack Developer)"
+                                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-red-600 transition-colors uppercase tracking-wider text-sm font-medium"
+                                    value={newExperience.role}
+                                    onChange={(e) => setNewExperience({ ...newExperience, role: e.target.value })}
+                                    required
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Company"
+                                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-red-600 transition-colors uppercase tracking-wider text-sm font-medium"
+                                    value={newExperience.company}
+                                    onChange={(e) => setNewExperience({ ...newExperience, company: e.target.value })}
+                                    required
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Period (e.g., 2022 - PRESENT)"
+                                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-red-600 transition-colors uppercase tracking-wider text-sm font-medium"
+                                    value={newExperience.period}
+                                    onChange={(e) => setNewExperience({ ...newExperience, period: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <textarea
+                                placeholder="Description"
+                                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-red-600 transition-colors h-32 uppercase tracking-wider text-sm font-medium"
+                                value={newExperience.description}
+                                onChange={(e) => setNewExperience({ ...newExperience, description: e.target.value })}
+                                required
+                            />
+                            <button type="submit" disabled={isSubmitting} className="w-full bg-red-600 hover:bg-black text-white font-bold py-4 rounded-xl transition-all duration-300 uppercase tracking-widest text-sm border border-red-600 disabled:opacity-50">
+                                {isSubmitting ? 'Adding...' : 'Add Experience'}
+                            </button>
+                        </form>
+
+                        {/* Experience List */}
+                        <div className="grid grid-cols-1 gap-6">
+                            {experiences.length > 0 ? (
+                                experiences.map((exp) => (
+                                    <div key={exp.id} className="p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl flex justify-between items-center group hover:border-red-600 transition-all">
+                                        <div>
+                                            <h4 className="text-white font-bold uppercase tracking-wider">{exp.role}</h4>
+                                            <p className="text-red-500 text-xs font-bold mt-1 uppercase tracking-widest">{exp.company} • {exp.period}</p>
+                                        </div>
+                                        <button
+                                            onClick={() => exp.id && handleDeleteExperience(exp.id)}
+                                            className="p-3 bg-red-600/10 text-red-600 hover:bg-red-600 hover:text-white rounded-xl transition-all"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center py-20 bg-zinc-900/10 border border-zinc-900 border-dashed rounded-3xl">
+                                    <p className="text-zinc-600 font-bold uppercase tracking-widest">No experience added yet</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'education' && (
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        {/* Add Education Form */}
+                        <form onSubmit={handleAddEducation} className="bg-zinc-950 p-8 rounded-3xl border border-zinc-900 shadow-2xl space-y-6">
+                            <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                                <span className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-sm">➕</span>
+                                Add New Education
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <input
+                                    type="text"
+                                    placeholder="Degree (e.g., Bachelor of Computer Science)"
+                                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-red-600 transition-colors uppercase tracking-wider text-sm font-medium"
+                                    value={newEducation.degree}
+                                    onChange={(e) => setNewEducation({ ...newEducation, degree: e.target.value })}
+                                    required
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="School"
+                                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-red-600 transition-colors uppercase tracking-wider text-sm font-medium"
+                                    value={newEducation.school}
+                                    onChange={(e) => setNewEducation({ ...newEducation, school: e.target.value })}
+                                    required
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Period (e.g., 2016 - 2020)"
+                                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-red-600 transition-colors uppercase tracking-wider text-sm font-medium"
+                                    value={newEducation.period}
+                                    onChange={(e) => setNewEducation({ ...newEducation, period: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <textarea
+                                placeholder="Description"
+                                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-red-600 transition-colors h-32 uppercase tracking-wider text-sm font-medium"
+                                value={newEducation.description}
+                                onChange={(e) => setNewEducation({ ...newEducation, description: e.target.value })}
+                                required
+                            />
+                            <button type="submit" disabled={isSubmitting} className="w-full bg-red-600 hover:bg-black text-white font-bold py-4 rounded-xl transition-all duration-300 uppercase tracking-widest text-sm border border-red-600 disabled:opacity-50">
+                                {isSubmitting ? 'Adding...' : 'Add Education'}
+                            </button>
+                        </form>
+
+                        {/* Education List */}
+                        <div className="grid grid-cols-1 gap-6">
+                            {educations.length > 0 ? (
+                                educations.map((edu) => (
+                                    <div key={edu.id} className="p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl flex justify-between items-center group hover:border-red-600 transition-all">
+                                        <div>
+                                            <h4 className="text-white font-bold uppercase tracking-wider">{edu.degree}</h4>
+                                            <p className="text-red-500 text-xs font-bold mt-1 uppercase tracking-widest">{edu.school} • {edu.period}</p>
+                                        </div>
+                                        <button
+                                            onClick={() => edu.id && handleDeleteEducation(edu.id)}
+                                            className="p-3 bg-red-600/10 text-red-600 hover:bg-red-600 hover:text-white rounded-xl transition-all"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center py-20 bg-zinc-900/10 border border-zinc-900 border-dashed rounded-3xl">
+                                    <p className="text-zinc-600 font-bold uppercase tracking-widest">No education added yet</p>
                                 </div>
                             )}
                         </div>
