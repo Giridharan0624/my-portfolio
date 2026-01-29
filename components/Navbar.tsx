@@ -8,9 +8,9 @@ export default function Navbar() {
 
     const navLinks = [
         { href: '/', label: 'Home' },
-        { href: '/about', label: 'About' },
-        { href: '/projects', label: 'Projects' },
-        { href: '/contact', label: 'Contact' },
+        { href: '/#about', label: 'About' },
+        { href: '/#projects', label: 'Projects' },
+        { href: '/#contact', label: 'Contact' },
     ];
 
     return (
@@ -18,7 +18,7 @@ export default function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
-                    <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-red-600 to-black bg-clip-text text-transparent">
+                    <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-red-600 via-yellow-500 to-black bg-clip-text text-transparent transform hover:scale-105 transition-transform duration-300">
                         GIRIDHARAN S
                     </Link>
 
