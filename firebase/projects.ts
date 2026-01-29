@@ -3,12 +3,25 @@ import {
     addDoc,
     getDocs,
     deleteDoc,
+    updateDoc,
     doc,
     query,
     orderBy,
     Timestamp
 } from 'firebase/firestore';
-import { db } from './config';
+import { db, storage } from './config';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
+export const uploadImage = async (file: File): Promise<string> => {
+    try {
+        const storageRef = ref(storage, `projects/${Date.now()}_${file.name}`);
+        const snapshot = await uploadBytes(storageRef, file);
+        return await getDownloadURL(snapshot.ref);
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        throw error;
+    }
+};
 
 export interface Project {
     id?: string;
@@ -90,6 +103,18 @@ export const deleteProject = async (projectId: string): Promise<void> => {
     }
 };
 
+export const updateProject = async (projectId: string, project: Partial<Project>): Promise<void> => {
+    try {
+        const projectRef = doc(db, 'projects', projectId);
+        await updateDoc(projectRef, {
+            ...project
+        });
+    } catch (error) {
+        console.error('Error updating project:', error);
+        throw error;
+    }
+};
+
 // Messages
 export const getMessages = async (): Promise<Message[]> => {
     try {
@@ -164,6 +189,16 @@ export const deleteSkill = async (skillId: string): Promise<void> => {
     }
 };
 
+export const updateSkill = async (skillId: string, name: string): Promise<void> => {
+    try {
+        const skillRef = doc(db, 'skills', skillId);
+        await updateDoc(skillRef, { name });
+    } catch (error) {
+        console.error('Error updating skill:', error);
+        throw error;
+    }
+};
+
 // Experience CRUD
 export const getExperiences = async (): Promise<Experience[]> => {
     const q = query(collection(db, 'experiences'), orderBy('createdAt', 'desc'));
@@ -186,6 +221,11 @@ export const deleteExperience = async (experienceId: string): Promise<void> => {
     await deleteDoc(doc(db, 'experiences', experienceId));
 };
 
+export const updateExperience = async (id: string, experience: Partial<Experience>): Promise<void> => {
+    const docRef = doc(db, 'experiences', id);
+    await updateDoc(docRef, { ...experience });
+};
+
 // Education CRUD
 export const getEducations = async (): Promise<Education[]> => {
     const q = query(collection(db, 'educations'), orderBy('createdAt', 'desc'));
@@ -206,4 +246,9 @@ export const addEducation = async (education: Omit<Education, 'id' | 'createdAt'
 
 export const deleteEducation = async (educationId: string): Promise<void> => {
     await deleteDoc(doc(db, 'educations', educationId));
+};
+
+export const updateEducation = async (id: string, education: Partial<Education>): Promise<void> => {
+    const docRef = doc(db, 'educations', id);
+    await updateDoc(docRef, { ...education });
 };

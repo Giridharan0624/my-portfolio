@@ -6,6 +6,7 @@ import {
     getProjects,
     addProject,
     deleteProject,
+    updateProject,
     Project,
     getMessages,
     deleteMessage,
@@ -13,15 +14,19 @@ import {
     getSkills,
     addSkill,
     deleteSkill,
+    updateSkill,
     Skill,
     Experience,
     getExperiences,
     addExperience,
     deleteExperience,
+    updateExperience,
     Education,
     getEducations,
     addEducation,
-    deleteEducation
+    deleteEducation,
+    updateEducation,
+    uploadImage
 } from '@/firebase/projects';
 import { useRouter } from 'next/navigation';
 import { Timestamp } from 'firebase/firestore';
@@ -41,6 +46,10 @@ export default function Dashboard() {
     // UI State
     const [showAddForm, setShowAddForm] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [editingItem, setEditingItem] = useState<{ id: string, type: 'project' | 'skill' | 'experience' | 'education' | 'skill_inline' } | null>(null);
 
     // Login form
     const [email, setEmail] = useState('');
@@ -77,9 +86,6 @@ export default function Dashboard() {
     });
 
     useEffect(() => {
-        if (!loading && !currentUser) {
-            router.push('/login');
-        }
         if (currentUser) {
             loadProjects();
             loadMessages();
@@ -87,7 +93,7 @@ export default function Dashboard() {
             loadExperiences();
             loadEducations();
         }
-    }, [currentUser, loading, router]);
+    }, [currentUser, loading]);
 
     const loadProjects = async () => {
         try {
@@ -166,22 +172,40 @@ export default function Dashboard() {
         setIsSubmitting(true);
 
         try {
-            await addProject({
+            let imageUrl = newProject.image;
+
+            if (selectedFile) {
+                setIsUploading(true);
+                imageUrl = await uploadImage(selectedFile);
+                setIsUploading(false);
+            }
+
+            const projectData = {
                 title: newProject.title,
                 description: newProject.description,
-                image: newProject.image,
+                image: imageUrl,
                 github: newProject.github,
                 demo: newProject.demo,
                 tech: newProject.tech.split(',').map(t => t.trim()),
-            });
+            };
+
+            if (editingItem && editingItem.type === 'project') {
+                await updateProject(editingItem.id, projectData);
+            } else {
+                await addProject(projectData);
+            }
 
             setNewProject({ title: '', description: '', image: '', github: '', demo: '', tech: '' });
+            setSelectedFile(null);
             setShowAddForm(false);
+            setEditingItem(null);
             loadProjects();
         } catch (error) {
-            console.error('Error adding project:', error);
+            console.error('Error saving project:', error);
+            alert('Failed to save project. Please try again.');
         } finally {
             setIsSubmitting(false);
+            setIsUploading(false);
         }
     };
 
@@ -213,11 +237,16 @@ export default function Dashboard() {
         setIsSubmitting(true);
 
         try {
-            await addSkill(newSkill.trim());
+            if (editingItem && editingItem.type === 'skill_inline') {
+                await updateSkill(editingItem.id, newSkill.trim());
+            } else {
+                await addSkill(newSkill.trim());
+            }
             setNewSkill('');
+            setEditingItem(null);
             loadSkills();
         } catch (error) {
-            console.error('Error adding skill:', error);
+            console.error('Error saving skill:', error);
         } finally {
             setIsSubmitting(false);
         }
@@ -238,11 +267,16 @@ export default function Dashboard() {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            await addExperience(newExperience);
+            if (editingItem && editingItem.type === 'experience') {
+                await updateExperience(editingItem.id, newExperience);
+            } else {
+                await addExperience(newExperience);
+            }
             setNewExperience({ role: '', company: '', period: '', description: '' });
+            setEditingItem(null);
             loadExperiences();
         } catch (error) {
-            console.error('Error adding experience:', error);
+            console.error('Error saving experience:', error);
         } finally {
             setIsSubmitting(false);
         }
@@ -263,11 +297,16 @@ export default function Dashboard() {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            await addEducation(newEducation);
+            if (editingItem && editingItem.type === 'education') {
+                await updateEducation(editingItem.id, newEducation);
+            } else {
+                await addEducation(newEducation);
+            }
             setNewEducation({ degree: '', school: '', period: '', description: '' });
+            setEditingItem(null);
             loadEducations();
         } catch (error) {
-            console.error('Error adding education:', error);
+            console.error('Error saving education:', error);
         } finally {
             setIsSubmitting(false);
         }
@@ -424,9 +463,14 @@ export default function Dashboard() {
                         {/* Add Project Section */}
                         <div className="bg-zinc-900/30 border border-zinc-900 p-8 rounded-3xl">
                             <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-2xl font-black uppercase tracking-tight">Manage Projects</h2>
+                                <h2 className="text-2xl font-black uppercase tracking-tight">
+                                    {editingItem?.type === 'project' ? 'Edit Project' : 'Manage Projects'}
+                                </h2>
                                 <button
-                                    onClick={() => setShowAddForm(!showAddForm)}
+                                    onClick={() => {
+                                        setShowAddForm(!showAddForm);
+                                        if (editingItem) setEditingItem(null);
+                                    }}
                                     className="px-6 py-2 bg-red-600/10 text-red-500 border border-red-600/20 font-bold rounded-full hover:bg-red-600 hover:text-white transition-all uppercase tracking-widest text-xs"
                                 >
                                     {showAddForm ? 'Close Form' : '+ New project'}
@@ -448,14 +492,61 @@ export default function Dashboard() {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-xs font-black text-red-500 uppercase">Cover Image URL</label>
-                                            <input
-                                                type="url"
-                                                value={newProject.image}
-                                                onChange={(e) => setNewProject({ ...newProject, image: e.target.value })}
-                                                className="w-full px-4 py-3 bg-black border border-zinc-800 rounded-xl focus:ring-1 focus:ring-red-600 outline-none transition-all"
-                                                placeholder="https://..."
-                                            />
+                                            <label className="text-xs font-black text-red-500 uppercase">Project Image</label>
+                                            <div
+                                                className={`relative flex flex-col items-center justify-center gap-4 p-8 border-2 border-dashed rounded-2xl transition-all cursor-pointer ${isDragging ? 'border-red-600 bg-red-600/10' : 'border-zinc-800 bg-black hover:border-zinc-700'}`}
+                                                onDragOver={(e) => {
+                                                    e.preventDefault();
+                                                    setIsDragging(true);
+                                                }}
+                                                onDragLeave={() => setIsDragging(false)}
+                                                onDrop={(e) => {
+                                                    e.preventDefault();
+                                                    setIsDragging(false);
+                                                    const file = e.dataTransfer.files?.[0];
+                                                    if (file && file.type.startsWith('image/')) {
+                                                        setSelectedFile(file);
+                                                    }
+                                                }}
+                                                onClick={() => document.getElementById('file-upload')?.click()}
+                                            >
+                                                <input
+                                                    id="file-upload"
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                                                    className="hidden"
+                                                />
+
+                                                {!selectedFile && !newProject.image && (
+                                                    <div className="text-center">
+                                                        <div className="text-3xl mb-2">📸</div>
+                                                        <p className="text-sm font-bold text-gray-400">Drag & Drop Image or Click to Browse</p>
+                                                        <p className="text-[10px] text-zinc-600 uppercase mt-1">PNG, JPG, WEBP up to 5MB</p>
+                                                    </div>
+                                                )}
+
+                                                {(selectedFile || newProject.image) && (
+                                                    <div className="flex flex-col items-center gap-4 w-full">
+                                                        <div className="relative w-full aspect-video md:w-48 bg-zinc-900 rounded-xl overflow-hidden border border-zinc-800">
+                                                            <img
+                                                                src={selectedFile ? URL.createObjectURL(selectedFile) : newProject.image}
+                                                                alt="Preview"
+                                                                className="w-full h-full object-cover"
+                                                                onLoad={() => {
+                                                                    // Clean up blob URL if needed
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        <div className="text-center">
+                                                            <p className="text-[10px] text-red-500 uppercase font-black tracking-widest">
+                                                                {selectedFile ? `Selected: ${selectedFile.name}` : 'Current Image'}
+                                                            </p>
+                                                            <p className="text-[10px] text-zinc-500 uppercase font-black mt-1">Click or drag to replace</p>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
 
@@ -508,11 +599,24 @@ export default function Dashboard() {
 
                                     <button
                                         type="submit"
-                                        disabled={isSubmitting}
-                                        className="w-full py-4 bg-white text-black font-black rounded-xl hover:bg-black hover:text-white border-2 border-white transition-all uppercase tracking-widest"
+                                        disabled={isSubmitting || isUploading}
+                                        className="w-full py-4 bg-white text-black font-black rounded-xl hover:bg-black hover:text-white border-2 border-white transition-all uppercase tracking-widest disabled:opacity-50"
                                     >
-                                        {isSubmitting ? 'Architecting...' : 'Deploy Project to Site'}
+                                        {isUploading ? 'Uploading Image...' : isSubmitting ? 'Architecting...' : editingItem?.type === 'project' ? 'Update Project' : 'Deploy Project to Site'}
                                     </button>
+                                    {editingItem?.type === 'project' && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setEditingItem(null);
+                                                setShowAddForm(false);
+                                                setNewProject({ title: '', description: '', image: '', github: '', demo: '', tech: '' });
+                                            }}
+                                            className="w-full mt-4 py-4 bg-transparent text-gray-400 font-black rounded-xl hover:text-white border-2 border-zinc-800 transition-all uppercase tracking-widest"
+                                        >
+                                            Cancel Editing
+                                        </button>
+                                    )}
                                 </form>
                             )}
                         </div>
@@ -524,15 +628,38 @@ export default function Dashboard() {
                                     <div key={project.id} className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl group hover:border-red-600 transition-all">
                                         <div className="flex justify-between items-start mb-4">
                                             <h3 className="text-xl font-black uppercase tracking-tight">{project.title}</h3>
-                                            <button
-                                                onClick={() => project.id && handleDeleteProject(project.id)}
-                                                className="p-3 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
-                                                aria-label="Delete project"
-                                            >
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                            </button>
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() => {
+                                                        setEditingItem({ id: project.id!, type: 'project' });
+                                                        setNewProject({
+                                                            title: project.title,
+                                                            description: project.description,
+                                                            image: project.image,
+                                                            github: project.github,
+                                                            demo: project.demo,
+                                                            tech: project.tech.join(', '),
+                                                        });
+                                                        setShowAddForm(true);
+                                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                    }}
+                                                    className="p-3 text-gray-500 hover:text-blue-500 hover:bg-blue-500/10 rounded-xl transition-all"
+                                                    aria-label="Edit project"
+                                                >
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    onClick={() => project.id && handleDeleteProject(project.id)}
+                                                    className="p-3 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
+                                                    aria-label="Delete project"
+                                                >
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         </div>
                                         <p className="text-gray-400 text-sm mb-4 line-clamp-2">{project.description}</p>
                                         <div className="flex flex-wrap gap-2">
@@ -631,8 +758,20 @@ export default function Dashboard() {
                                     disabled={isSubmitting}
                                     className="px-8 py-3 bg-red-600 text-white font-black rounded-xl hover:bg-red-700 transition-all uppercase tracking-widest shadow-[0_0_20px_rgba(255,0,0,0.3)] disabled:opacity-50"
                                 >
-                                    {isSubmitting ? 'Adding...' : 'Add Skill'}
+                                    {isSubmitting ? 'Saving...' : editingItem?.type === 'skill_inline' ? 'Update' : 'Add Skill'}
                                 </button>
+                                {editingItem?.type === 'skill_inline' && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEditingItem(null);
+                                            setNewSkill('');
+                                        }}
+                                        className="px-6 py-3 bg-zinc-800 text-gray-400 font-bold rounded-xl hover:text-white transition-all uppercase tracking-widest text-xs"
+                                    >
+                                        Cancel
+                                    </button>
+                                )}
                             </form>
                         </div>
 
@@ -642,6 +781,17 @@ export default function Dashboard() {
                                 skills.map((skill) => (
                                     <div key={skill.id} className="group relative bg-zinc-900 border border-zinc-800 p-4 rounded-xl hover:border-red-600 transition-all text-center">
                                         <span className="font-bold text-gray-300 group-hover:text-white transition-colors uppercase tracking-tight text-sm">{skill.name}</span>
+                                        <button
+                                            onClick={() => {
+                                                setEditingItem({ id: skill.id!, type: 'skill_inline' });
+                                                setNewSkill(skill.name);
+                                            }}
+                                            className="absolute -top-2 -left-2 p-1.5 bg-blue-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-black hover:text-blue-500 border border-blue-600 shadow-xl"
+                                        >
+                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                        </button>
                                         <button
                                             onClick={() => skill.id && handleDeleteSkill(skill.id)}
                                             className="absolute -top-2 -right-2 p-1.5 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-black hover:text-red-500 border border-red-600 shadow-xl"
@@ -666,8 +816,10 @@ export default function Dashboard() {
                         {/* Add Experience Form */}
                         <form onSubmit={handleAddExperience} className="bg-zinc-950 p-8 rounded-3xl border border-zinc-900 shadow-2xl space-y-6">
                             <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
-                                <span className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-sm">➕</span>
-                                Add New Experience
+                                <span className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-sm">
+                                    {editingItem?.type === 'experience' ? '📝' : '➕'}
+                                </span>
+                                {editingItem?.type === 'experience' ? 'Edit Experience' : 'Add New Experience'}
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <input
@@ -702,9 +854,23 @@ export default function Dashboard() {
                                 onChange={(e) => setNewExperience({ ...newExperience, description: e.target.value })}
                                 required
                             />
-                            <button type="submit" disabled={isSubmitting} className="w-full bg-red-600 hover:bg-black text-white font-bold py-4 rounded-xl transition-all duration-300 uppercase tracking-widest text-sm border border-red-600 disabled:opacity-50">
-                                {isSubmitting ? 'Adding...' : 'Add Experience'}
-                            </button>
+                            <div className="flex gap-4">
+                                <button type="submit" disabled={isSubmitting} className="flex-1 bg-red-600 hover:bg-black text-white font-bold py-4 rounded-xl transition-all duration-300 uppercase tracking-widest text-sm border border-red-600 disabled:opacity-50">
+                                    {isSubmitting ? 'Saving...' : editingItem?.type === 'experience' ? 'Update Experience' : 'Add Experience'}
+                                </button>
+                                {editingItem?.type === 'experience' && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEditingItem(null);
+                                            setNewExperience({ role: '', company: '', period: '', description: '' });
+                                        }}
+                                        className="px-8 bg-zinc-800 text-gray-400 font-bold rounded-xl hover:text-white transition-all uppercase tracking-widest text-sm"
+                                    >
+                                        Cancel
+                                    </button>
+                                )}
+                            </div>
                         </form>
 
                         {/* Experience List */}
@@ -716,12 +882,29 @@ export default function Dashboard() {
                                             <h4 className="text-white font-bold uppercase tracking-wider">{exp.role}</h4>
                                             <p className="text-red-500 text-xs font-bold mt-1 uppercase tracking-widest">{exp.company} • {exp.period}</p>
                                         </div>
-                                        <button
-                                            onClick={() => exp.id && handleDeleteExperience(exp.id)}
-                                            className="p-3 bg-red-600/10 text-red-600 hover:bg-red-600 hover:text-white rounded-xl transition-all"
-                                        >
-                                            Delete
-                                        </button>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => {
+                                                    setEditingItem({ id: exp.id!, type: 'experience' });
+                                                    setNewExperience({
+                                                        role: exp.role,
+                                                        company: exp.company,
+                                                        period: exp.period,
+                                                        description: exp.description,
+                                                    });
+                                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                }}
+                                                className="p-3 bg-blue-600/10 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl transition-all"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() => exp.id && handleDeleteExperience(exp.id)}
+                                                className="p-3 bg-red-600/10 text-red-600 hover:bg-red-600 hover:text-white rounded-xl transition-all"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
                                     </div>
                                 ))
                             ) : (
@@ -738,8 +921,10 @@ export default function Dashboard() {
                         {/* Add Education Form */}
                         <form onSubmit={handleAddEducation} className="bg-zinc-950 p-8 rounded-3xl border border-zinc-900 shadow-2xl space-y-6">
                             <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
-                                <span className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-sm">➕</span>
-                                Add New Education
+                                <span className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-sm">
+                                    {editingItem?.type === 'education' ? '📝' : '➕'}
+                                </span>
+                                {editingItem?.type === 'education' ? 'Edit Education' : 'Add New Education'}
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <input
@@ -774,9 +959,23 @@ export default function Dashboard() {
                                 onChange={(e) => setNewEducation({ ...newEducation, description: e.target.value })}
                                 required
                             />
-                            <button type="submit" disabled={isSubmitting} className="w-full bg-red-600 hover:bg-black text-white font-bold py-4 rounded-xl transition-all duration-300 uppercase tracking-widest text-sm border border-red-600 disabled:opacity-50">
-                                {isSubmitting ? 'Adding...' : 'Add Education'}
-                            </button>
+                            <div className="flex gap-4">
+                                <button type="submit" disabled={isSubmitting} className="flex-1 bg-red-600 hover:bg-black text-white font-bold py-4 rounded-xl transition-all duration-300 uppercase tracking-widest text-sm border border-red-600 disabled:opacity-50">
+                                    {isSubmitting ? 'Saving...' : editingItem?.type === 'education' ? 'Update Education' : 'Add Education'}
+                                </button>
+                                {editingItem?.type === 'education' && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEditingItem(null);
+                                            setNewEducation({ degree: '', school: '', period: '', description: '' });
+                                        }}
+                                        className="px-8 bg-zinc-800 text-gray-400 font-bold rounded-xl hover:text-white transition-all uppercase tracking-widest text-sm"
+                                    >
+                                        Cancel
+                                    </button>
+                                )}
+                            </div>
                         </form>
 
                         {/* Education List */}
@@ -788,12 +987,29 @@ export default function Dashboard() {
                                             <h4 className="text-white font-bold uppercase tracking-wider">{edu.degree}</h4>
                                             <p className="text-red-500 text-xs font-bold mt-1 uppercase tracking-widest">{edu.school} • {edu.period}</p>
                                         </div>
-                                        <button
-                                            onClick={() => edu.id && handleDeleteEducation(edu.id)}
-                                            className="p-3 bg-red-600/10 text-red-600 hover:bg-red-600 hover:text-white rounded-xl transition-all"
-                                        >
-                                            Delete
-                                        </button>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => {
+                                                    setEditingItem({ id: edu.id!, type: 'education' });
+                                                    setNewEducation({
+                                                        degree: edu.degree,
+                                                        school: edu.school,
+                                                        period: edu.period,
+                                                        description: edu.description,
+                                                    });
+                                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                }}
+                                                className="p-3 bg-blue-600/10 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl transition-all"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() => edu.id && handleDeleteEducation(edu.id)}
+                                                className="p-3 bg-red-600/10 text-red-600 hover:bg-red-600 hover:text-white rounded-xl transition-all"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
                                     </div>
                                 ))
                             ) : (
