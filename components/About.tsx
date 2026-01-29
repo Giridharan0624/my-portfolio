@@ -57,23 +57,9 @@ export default function About({ id }: { id?: string }) {
                                     </div>
                                 ))
                             ) : (
-                                [
-                                    'React & Next.js',
-                                    'TypeScript',
-                                    'Node.js',
-                                    'Firebase',
-                                    'Tailwind CSS',
-                                    'Git & GitHub',
-                                    'REST API',
-                                    'Database',
-                                ].map((skill) => (
-                                    <div
-                                        key={skill}
-                                        className="p-4 bg-zinc-900 text-center font-medium text-gray-300 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-default border border-zinc-800 uppercase tracking-tighter text-sm"
-                                    >
-                                        {skill}
-                                    </div>
-                                ))
+                                <div className="col-span-full py-10 text-center border border-dashed border-zinc-800 rounded-xl">
+                                    <p className="text-zinc-600 font-bold uppercase tracking-widest text-xs">Skills will be appearing soon</p>
+                                </div>
                             )}
                         </div>
                     </article>
