@@ -183,7 +183,7 @@ export default function Dashboard() {
             const projectData = {
                 title: newProject.title,
                 description: newProject.description,
-                image: imageUrl,
+                image: imageUrl || '', // Ensure it's at least an empty string
                 github: newProject.github,
                 demo: newProject.demo,
                 tech: newProject.tech.split(',').map(t => t.trim()),
@@ -492,60 +492,98 @@ export default function Dashboard() {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-xs font-black text-red-500 uppercase">Project Image</label>
-                                            <div
-                                                className={`relative flex flex-col items-center justify-center gap-4 p-8 border-2 border-dashed rounded-2xl transition-all cursor-pointer ${isDragging ? 'border-red-600 bg-red-600/10' : 'border-zinc-800 bg-black hover:border-zinc-700'}`}
-                                                onDragOver={(e) => {
-                                                    e.preventDefault();
-                                                    setIsDragging(true);
-                                                }}
-                                                onDragLeave={() => setIsDragging(false)}
-                                                onDrop={(e) => {
-                                                    e.preventDefault();
-                                                    setIsDragging(false);
-                                                    const file = e.dataTransfer.files?.[0];
-                                                    if (file && file.type.startsWith('image/')) {
-                                                        setSelectedFile(file);
-                                                    }
-                                                }}
-                                                onClick={() => document.getElementById('file-upload')?.click()}
-                                            >
-                                                <input
-                                                    id="file-upload"
-                                                    type="file"
-                                                    accept="image/*"
-                                                    onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                                                    className="hidden"
-                                                />
+                                            <div className="flex justify-between items-center px-1">
+                                                <label className="text-xs font-black text-red-500 uppercase">Project Image</label>
+                                                <span className="text-[10px] text-zinc-500 uppercase font-black">Local Upload or URL</span>
+                                            </div>
 
-                                                {!selectedFile && !newProject.image && (
-                                                    <div className="text-center">
-                                                        <div className="text-3xl mb-2">📸</div>
-                                                        <p className="text-sm font-bold text-gray-400">Drag & Drop Image or Click to Browse</p>
-                                                        <p className="text-[10px] text-zinc-600 uppercase mt-1">PNG, JPG, WEBP up to 5MB</p>
-                                                    </div>
-                                                )}
+                                            <div className="space-y-4">
+                                                {/* Local Upload Area */}
+                                                <div
+                                                    className={`relative flex flex-col items-center justify-center gap-4 p-8 border-2 border-dashed rounded-2xl transition-all cursor-pointer ${isDragging ? 'border-red-600 bg-red-600/10' : 'border-zinc-800 bg-black hover:border-zinc-700'}`}
+                                                    onDragOver={(e) => {
+                                                        e.preventDefault();
+                                                        setIsDragging(true);
+                                                    }}
+                                                    onDragLeave={() => setIsDragging(false)}
+                                                    onDrop={(e) => {
+                                                        e.preventDefault();
+                                                        setIsDragging(false);
+                                                        const file = e.dataTransfer.files?.[0];
+                                                        if (file && file.type.startsWith('image/')) {
+                                                            setSelectedFile(file);
+                                                            setNewProject({ ...newProject, image: '' }); // Clear URL if file is dropped
+                                                        }
+                                                    }}
+                                                    onClick={() => document.getElementById('file-upload')?.click()}
+                                                >
+                                                    <input
+                                                        id="file-upload"
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={(e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (file) {
+                                                                setSelectedFile(file);
+                                                                setNewProject({ ...newProject, image: '' }); // Clear URL if file is chosen
+                                                            }
+                                                        }}
+                                                        className="hidden"
+                                                    />
 
-                                                {(selectedFile || newProject.image) && (
-                                                    <div className="flex flex-col items-center gap-4 w-full">
-                                                        <div className="relative w-full aspect-video md:w-48 bg-zinc-900 rounded-xl overflow-hidden border border-zinc-800">
-                                                            <img
-                                                                src={selectedFile ? URL.createObjectURL(selectedFile) : newProject.image}
-                                                                alt="Preview"
-                                                                className="w-full h-full object-cover"
-                                                                onLoad={() => {
-                                                                    // Clean up blob URL if needed
-                                                                }}
-                                                            />
-                                                        </div>
+                                                    {!selectedFile && !newProject.image && (
                                                         <div className="text-center">
-                                                            <p className="text-[10px] text-red-500 uppercase font-black tracking-widest">
-                                                                {selectedFile ? `Selected: ${selectedFile.name}` : 'Current Image'}
-                                                            </p>
-                                                            <p className="text-[10px] text-zinc-500 uppercase font-black mt-1">Click or drag to replace</p>
+                                                            <div className="text-3xl mb-2">📸</div>
+                                                            <p className="text-sm font-bold text-gray-400">Drag & Drop Image or Click to Browse</p>
+                                                            <p className="text-[10px] text-zinc-600 uppercase mt-1">PNG, JPG, WEBP up to 5MB</p>
                                                         </div>
+                                                    )}
+
+                                                    {(selectedFile || newProject.image) && (
+                                                        <div className="flex flex-col items-center gap-4 w-full">
+                                                            <div className="relative w-full aspect-video md:w-48 bg-zinc-900 rounded-xl overflow-hidden border border-zinc-800">
+                                                                <img
+                                                                    src={selectedFile ? URL.createObjectURL(selectedFile) : newProject.image}
+                                                                    alt="Preview"
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                            </div>
+                                                            <div className="text-center">
+                                                                <p className="text-[10px] text-red-500 uppercase font-black tracking-widest">
+                                                                    {selectedFile ? `Selected: ${selectedFile.name}` : 'Ready for Display'}
+                                                                </p>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setSelectedFile(null);
+                                                                        setNewProject({ ...newProject, image: '' });
+                                                                    }}
+                                                                    className="mt-2 text-[10px] text-zinc-500 hover:text-red-600 uppercase font-black transition-colors"
+                                                                >
+                                                                    Remove Image
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* URL Input Alternative */}
+                                                <div className="relative group/url">
+                                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        <span className="text-zinc-600 text-[10px] uppercase font-black group-focus-within/url:text-red-500 transition-colors">URL</span>
                                                     </div>
-                                                )}
+                                                    <input
+                                                        type="url"
+                                                        value={newProject.image}
+                                                        onChange={(e) => {
+                                                            setNewProject({ ...newProject, image: e.target.value });
+                                                            if (e.target.value) setSelectedFile(null); // Clear file if URL is typed
+                                                        }}
+                                                        className="w-full pl-12 pr-4 py-3 bg-black border border-zinc-800 rounded-xl focus:ring-1 focus:ring-red-600 outline-none transition-all text-xs"
+                                                        placeholder="Or paste an image link here..."
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
