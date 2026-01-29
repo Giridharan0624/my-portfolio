@@ -8,7 +8,7 @@ service cloud.firestore {
 
     match /messages/{doc} {
       allow create: if true;
-      allow read, update, delete: if false;
+      allow read, delete: if request.auth != null;
     }
   }
 }
