@@ -29,6 +29,12 @@ export interface Message {
     createdAt: Timestamp;
 }
 
+export interface Skill {
+    id?: string;
+    name: string;
+    createdAt: Timestamp;
+}
+
 // Projects CRUD
 export const getProjects = async (): Promise<Project[]> => {
     try {
@@ -99,6 +105,43 @@ export const deleteMessage = async (messageId: string): Promise<void> => {
         await deleteDoc(doc(db, 'messages', messageId));
     } catch (error) {
         console.error('Error deleting message:', error);
+        throw error;
+    }
+};
+
+// Skills
+export const getSkills = async (): Promise<Skill[]> => {
+    try {
+        const q = query(collection(db, 'skills'), orderBy('createdAt', 'asc'));
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        } as Skill));
+    } catch (error) {
+        console.error('Error fetching skills:', error);
+        throw error;
+    }
+};
+
+export const addSkill = async (name: string): Promise<string> => {
+    try {
+        const docRef = await addDoc(collection(db, 'skills'), {
+            name,
+            createdAt: Timestamp.now()
+        });
+        return docRef.id;
+    } catch (error) {
+        console.error('Error adding skill:', error);
+        throw error;
+    }
+};
+
+export const deleteSkill = async (skillId: string): Promise<void> => {
+    try {
+        await deleteDoc(doc(db, 'skills', skillId));
+    } catch (error) {
+        console.error('Error deleting skill:', error);
         throw error;
     }
 };

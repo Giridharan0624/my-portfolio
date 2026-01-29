@@ -1,4 +1,23 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { getSkills, Skill } from '@/firebase/projects';
+
 export default function About({ id }: { id?: string }) {
+    const [skills, setSkills] = useState<Skill[]>([]);
+
+    useEffect(() => {
+        const fetchSkills = async () => {
+            try {
+                const fetchedSkills = await getSkills();
+                setSkills(fetchedSkills);
+            } catch (error) {
+                console.error('Error fetching skills:', error);
+            }
+        };
+        fetchSkills();
+    }, []);
+
     return (
         <section id={id} className="min-h-screen bg-black text-white py-20 border-t border-zinc-900">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -28,23 +47,34 @@ export default function About({ id }: { id?: string }) {
                             <span className="text-red-500">02.</span> SKILLS & TECH
                         </h3>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {[
-                                'React & Next.js',
-                                'TypeScript',
-                                'Node.js',
-                                'Firebase',
-                                'Tailwind CSS',
-                                'Git & GitHub',
-                                'REST API',
-                                'Database',
-                            ].map((skill) => (
-                                <div
-                                    key={skill}
-                                    className="p-4 bg-zinc-900 text-center font-medium text-gray-300 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-default border border-zinc-800"
-                                >
-                                    {skill}
-                                </div>
-                            ))}
+                            {skills.length > 0 ? (
+                                skills.map((skill) => (
+                                    <div
+                                        key={skill.id}
+                                        className="p-4 bg-zinc-900 text-center font-medium text-gray-300 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-default border border-zinc-800 uppercase tracking-tighter text-sm"
+                                    >
+                                        {skill.name}
+                                    </div>
+                                ))
+                            ) : (
+                                [
+                                    'React & Next.js',
+                                    'TypeScript',
+                                    'Node.js',
+                                    'Firebase',
+                                    'Tailwind CSS',
+                                    'Git & GitHub',
+                                    'REST API',
+                                    'Database',
+                                ].map((skill) => (
+                                    <div
+                                        key={skill}
+                                        className="p-4 bg-zinc-900 text-center font-medium text-gray-300 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-default border border-zinc-800 uppercase tracking-tighter text-sm"
+                                    >
+                                        {skill}
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </article>
 
