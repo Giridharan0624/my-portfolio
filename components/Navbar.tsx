@@ -14,12 +14,12 @@ export default function Navbar() {
     ];
 
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200 dark:bg-black/80 dark:border-gray-800">
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-md border-b border-zinc-900">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center h-16">
+                <div className="flex justify-between items-center h-20">
                     {/* Logo */}
-                    <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-red-600 via-yellow-500 to-black bg-clip-text text-transparent transform hover:scale-105 transition-transform duration-300">
-                        GIRIDHARAN S
+                    <Link href="/" className="text-2xl font-black text-white uppercase tracking-tighter hover:text-red-600 transition-colors">
+                        GIRIDHARAN <span className="text-red-600">S</span>
                     </Link>
 
                     {/* Desktop Navigation */}
@@ -28,7 +28,7 @@ export default function Navbar() {
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className="text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400 transition-colors font-medium"
+                                className="text-gray-400 hover:text-white hover:tracking-widest transition-all duration-300 font-bold uppercase text-sm tracking-wider"
                             >
                                 {link.label}
                             </Link>
@@ -38,7 +38,7 @@ export default function Navbar() {
                     {/* Mobile Menu Button */}
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        className="md:hidden p-2 text-white hover:bg-zinc-900 rounded-lg transition-colors"
                         aria-label="Toggle menu"
                     >
                         <svg
@@ -68,13 +68,13 @@ export default function Navbar() {
 
                 {/* Mobile Menu */}
                 {isMenuOpen && (
-                    <div className="md:hidden py-4 space-y-2">
+                    <div className="md:hidden py-4 bg-zinc-950 border-t border-zinc-900 animate-in slide-in-from-top-2">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
                                 onClick={() => setIsMenuOpen(false)}
-                                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                                className="block px-4 py-3 text-gray-400 hover:text-white hover:bg-zinc-900 font-bold uppercase text-sm tracking-wider transition-colors"
                             >
                                 {link.label}
                             </Link>
