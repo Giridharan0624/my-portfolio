@@ -54,5 +54,3 @@ To deploy Firestore security rules:
 firebase deploy --only firestore:rules
 ```
 
-## 📝 License
-This project is licensed under the MIT License.
