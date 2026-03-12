@@ -25,14 +25,14 @@ export default function Contact({ id }: { id?: string }) {
                     </h3>
                     <div className="flex flex-wrap justify-center gap-6">
                         <a
-                            href="mailto:your.email@example.com"
+                            href="mailto:giricoder.dev@gmail.com"
                             className="flex items-center gap-3 px-6 py-3 bg-zinc-900 text-gray-300 hover:text-white hover:bg-zinc-800 border border-zinc-800 transition-all font-medium group"
                         >
                             <span className="text-red-600 group-hover:scale-110 transition-transform">✉️</span>
-                            your.email@example.com
+                            giricoder.dev@gmail.com
                         </a>
                         <a
-                            href="https://github.com/yourusername"
+                            href="https://github.com/Giridharan0624"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-3 px-6 py-3 bg-zinc-900 text-gray-300 hover:text-white hover:bg-zinc-800 border border-zinc-800 transition-all font-medium group"
@@ -43,7 +43,7 @@ export default function Contact({ id }: { id?: string }) {
                             GitHub
                         </a>
                         <a
-                            href="https://linkedin.com/in/yourusername"
+                            href="https://www.linkedin.com/in/giridharan0624/"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-3 px-6 py-3 bg-zinc-900 text-gray-300 hover:text-white hover:bg-zinc-800 border border-zinc-800 transition-all font-medium group"
