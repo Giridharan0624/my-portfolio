@@ -1,12 +1,22 @@
 'use client';
 
 import ProjectCard from '@/components/ProjectCard';
-import { Project } from '@/firebase/projects';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
+
+export interface SerializedProject {
+    id?: string;
+    title: string;
+    description: string;
+    image: string;
+    github: string;
+    demo: string;
+    tech: string[];
+    createdAt: number;
+}
 
 interface ProjectsProps {
     id?: string;
-    projects: Project[];
+    projects: SerializedProject[];
 }
 
 export default function Projects({ id, projects }: ProjectsProps) {

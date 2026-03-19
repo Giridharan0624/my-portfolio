@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 interface ScrollRevealOptions {
     threshold?: number;
@@ -12,30 +12,39 @@ export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
     options: ScrollRevealOptions = {}
 ) {
     const { threshold = 0.15, rootMargin = '0px', triggerOnce = true } = options;
-    const ref = useRef<T>(null);
     const [isVisible, setIsVisible] = useState(false);
+    const observerRef = useRef<IntersectionObserver | null>(null);
 
-    useEffect(() => {
-        const element = ref.current;
-        if (!element) return;
+    // Use a callback ref so the observer re-attaches whenever the DOM element mounts/changes
+    const ref = useCallback(
+        (node: T | null) => {
+            // Clean up previous observer
+            if (observerRef.current) {
+                observerRef.current.disconnect();
+                observerRef.current = null;
+            }
 
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setIsVisible(true);
-                    if (triggerOnce) {
-                        observer.unobserve(element);
+            if (!node) return;
+
+            const observer = new IntersectionObserver(
+                ([entry]) => {
+                    if (entry.isIntersecting) {
+                        setIsVisible(true);
+                        if (triggerOnce) {
+                            observer.unobserve(node);
+                        }
+                    } else if (!triggerOnce) {
+                        setIsVisible(false);
                     }
-                } else if (!triggerOnce) {
-                    setIsVisible(false);
-                }
-            },
-            { threshold, rootMargin }
-        );
+                },
+                { threshold, rootMargin }
+            );
 
-        observer.observe(element);
-        return () => observer.disconnect();
-    }, [threshold, rootMargin, triggerOnce]);
+            observer.observe(node);
+            observerRef.current = observer;
+        },
+        [threshold, rootMargin, triggerOnce]
+    );
 
     return { ref, isVisible };
 }

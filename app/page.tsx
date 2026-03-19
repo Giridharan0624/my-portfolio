@@ -5,13 +5,28 @@ import Experience from '@/components/Experience';
 import Education from '@/components/Education';
 import Projects from '@/components/Projects';
 import Contact from '@/components/Contact';
-import { getProjects, Project } from '@/firebase/projects';
+import { getProjects } from '@/firebase/projects';
 
 export default async function Home() {
   // Fetch all projects for the Projects section
-  let allProjects: Project[] = [];
+  let allProjects: Array<{
+    id?: string;
+    title: string;
+    description: string;
+    image: string;
+    github: string;
+    demo: string;
+    tech: string[];
+    createdAt: number;
+  }> = [];
+
   try {
-    allProjects = await getProjects();
+    const rawProjects = await getProjects();
+    // Serialize Firestore Timestamps to plain numbers for client components
+    allProjects = rawProjects.map(({ createdAt, ...rest }) => ({
+      ...rest,
+      createdAt: createdAt?.toMillis?.() ?? Date.now(),
+    }));
   } catch (error) {
     console.error('Error fetching projects:', error);
   }
@@ -28,3 +43,4 @@ export default async function Home() {
     </div>
   );
 }
+

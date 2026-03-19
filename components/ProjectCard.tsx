@@ -1,8 +1,8 @@
 import Image from 'next/image';
-import { Project } from '@/firebase/projects';
+import { SerializedProject } from '@/components/Projects';
 
 interface ProjectCardProps {
-    project: Project;
+    project: SerializedProject;
 }
 
 export default function ProjectCard({ project }: ProjectCardProps) {
