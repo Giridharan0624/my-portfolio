@@ -163,14 +163,7 @@ export default function Services({ id }: { id?: string }) {
                                     </div>
                                 </div>
 
-                                {/* Arrow */}
-                                <div className="shrink-0 hidden md:flex items-center">
-                                    <div className="w-12 h-12 rounded-full border border-zinc-800 group-hover:border-red-600 flex items-center justify-center transition-all duration-300 group-hover:bg-red-600/10">
-                                        <svg className="w-5 h-5 text-zinc-600 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" />
-                                        </svg>
-                                    </div>
-                                </div>
+
                             </div>
                         </div>
                     ))}
