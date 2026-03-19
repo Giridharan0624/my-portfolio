@@ -43,7 +43,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
             {/* Modal Content */}
             <div
                 ref={modalRef}
-                className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-zinc-950 border border-zinc-800 rounded-[32px] shadow-[0_40px_100px_rgba(220,38,38,0.15)] animate-modal-content"
+                className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto no-scrollbar bg-zinc-950 border border-zinc-800 rounded-[32px] shadow-[0_40px_100px_rgba(220,38,38,0.15)] animate-modal-content"
             >
                 {/* Back Button */}
                 <button

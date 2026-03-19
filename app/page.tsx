@@ -35,10 +35,10 @@ export default async function Home() {
     <div className="flex flex-col">
       <Hero />
       <About id="about" />
+      <Projects id="projects" projects={allProjects} />
       <Skills id="skills" />
       <Experience id="experience" />
       <Education id="education" />
-      <Projects id="projects" projects={allProjects} />
       <Contact id="contact" />
     </div>
   );
