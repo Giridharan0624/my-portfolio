@@ -2,9 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { getSkills, Skill } from '@/firebase/projects';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 export default function Skills({ id }: { id?: string }) {
     const [skills, setSkills] = useState<Skill[]>([]);
+    const header = useScrollReveal<HTMLDivElement>();
+    const grid = useScrollReveal<HTMLDivElement>({ threshold: 0.1 });
 
     useEffect(() => {
         const fetchSkills = async () => {
@@ -21,19 +24,25 @@ export default function Skills({ id }: { id?: string }) {
     return (
         <section id={id} className="min-h-screen bg-black text-white py-20 border-t border-zinc-900">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-16">
+                <div
+                    ref={header.ref}
+                    className={`text-center mb-16 reveal-up ${header.isVisible ? 'revealed' : ''}`}
+                >
                     <h2 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight uppercase">
                         Technical <span className="text-red-600">Skills</span>
                     </h2>
                     <div className="w-24 h-1 bg-red-600 mx-auto"></div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div
+                    ref={grid.ref}
+                    className={`grid grid-cols-2 md:grid-cols-4 gap-4 stagger-children ${grid.isVisible ? 'revealed' : ''}`}
+                >
                     {skills.length > 0 ? (
                         skills.map((skill) => (
                             <div
                                 key={skill.id}
-                                className="p-4 bg-zinc-900 text-center font-medium text-gray-300 hover:bg-red-600 hover:text-white transition-all duration-300 cursor-default border border-zinc-800 uppercase tracking-tighter text-sm"
+                                className="p-4 bg-zinc-900 text-center font-medium text-gray-300 hover:bg-red-600 hover:text-white hover:scale-105 transition-all duration-300 cursor-default border border-zinc-800 uppercase tracking-tighter text-sm"
                             >
                                 {skill.name}
                             </div>

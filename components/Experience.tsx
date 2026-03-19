@@ -2,10 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { getExperiences, Experience as ExperienceType } from '@/firebase/projects';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 export default function Experience({ id }: { id?: string }) {
     const [experiences, setExperiences] = useState<ExperienceType[]>([]);
     const [loading, setLoading] = useState(true);
+    const header = useScrollReveal<HTMLDivElement>();
+    const timeline = useScrollReveal<HTMLDivElement>({ threshold: 0.05 });
 
     useEffect(() => {
         const fetchExperiences = async () => {
@@ -47,7 +50,10 @@ export default function Experience({ id }: { id?: string }) {
             </div>
 
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div className="text-center mb-20">
+                <div
+                    ref={header.ref}
+                    className={`text-center mb-20 reveal-up ${header.isVisible ? 'revealed' : ''}`}
+                >
                     <h2 className="text-12xl md:text-[120px] font-black text-white/[0.03] uppercase leading-none absolute left-0 right-0 -top-10 select-none pointer-events-none tracking-tighter">
                         EXPERIENCE
                     </h2>
@@ -58,7 +64,10 @@ export default function Experience({ id }: { id?: string }) {
                 </div>
 
                 {sorted.length > 0 ? (
-                    <div className="relative">
+                    <div
+                        ref={timeline.ref}
+                        className={`relative reveal-left ${timeline.isVisible ? 'revealed' : ''}`}
+                    >
                         {/* Vertical Timeline Line */}
                         <div className="absolute left-6 md:left-8 top-0 bottom-0 w-0.5 bg-zinc-800"></div>
 

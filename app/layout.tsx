@@ -11,9 +11,9 @@ const lexend = Lexend({
 });
 
 export const metadata: Metadata = {
-  title: "Giridharan-Portfolio",
+  title: "Giridharan | Software Developer|Portfolio",
   description: "Personal portfolio showcasing web development projects and skills. Built with Next.js, TypeScript, and Firebase.",
-  keywords: ["portfolio", "web developer", "full stack", "Next.js", "React", "TypeScript"],
+  keywords: ["portfolio", "web developer", "full stack", "Next.js", "React", "TypeScript","Software Developer"],
 };
 
 export default function RootLayout({

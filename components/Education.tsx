@@ -2,10 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { getEducations, Education as EducationType } from '@/firebase/projects';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 export default function Education({ id }: { id?: string }) {
     const [educations, setEducations] = useState<EducationType[]>([]);
     const [loading, setLoading] = useState(true);
+    const header = useScrollReveal<HTMLDivElement>();
+    const grid = useScrollReveal<HTMLDivElement>({ threshold: 0.1 });
 
     useEffect(() => {
         const fetchEducations = async () => {
@@ -39,7 +42,10 @@ export default function Education({ id }: { id?: string }) {
             </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div className="text-center mb-20">
+                <div
+                    ref={header.ref}
+                    className={`text-center mb-20 reveal-up ${header.isVisible ? 'revealed' : ''}`}
+                >
                     <h2 className="text-12xl md:text-[120px] font-black text-white/[0.03] uppercase leading-none absolute left-0 right-0 -top-10 select-none pointer-events-none tracking-tighter">
                         EDUCATION
                     </h2>
@@ -49,7 +55,10 @@ export default function Education({ id }: { id?: string }) {
                     <div className="w-20 h-1.5 bg-red-600 mx-auto mt-6"></div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div
+                    ref={grid.ref}
+                    className={`grid grid-cols-1 md:grid-cols-2 gap-8 stagger-children ${grid.isVisible ? 'revealed' : ''}`}
+                >
                     {educations.length > 0 ? (
                         educations.map((edu) => (
                             <div key={edu.id} className="group relative bg-black/50 border border-zinc-900 p-10 rounded-[40px] hover:border-red-600 transition-all duration-500 hover:shadow-[0_30px_60px_rgba(0,0,0,0.5)] overflow-hidden">
