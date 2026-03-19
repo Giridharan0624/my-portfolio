@@ -41,7 +41,7 @@ export default function Hero() {
 
                         {/* Title */}
                         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-400 mb-8 hero-title">
-                            FULL STACK <span className="text-red-500">DEVELOPER</span>
+                            Software <span className="text-red-500">Developer</span> & UI/UX <span className="text-red-500">Designer</span>
                         </h2>
 
                         {/* Description */}

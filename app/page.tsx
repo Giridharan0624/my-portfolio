@@ -1,5 +1,6 @@
 import Hero from '@/components/Hero';
 import About from '@/components/About';
+import Services from '@/components/Services';
 import Skills from '@/components/Skills';
 import Experience from '@/components/Experience';
 import Education from '@/components/Education';
@@ -35,6 +36,7 @@ export default async function Home() {
     <div className="flex flex-col">
       <Hero />
       <About id="about" />
+      <Services id="services" />
       <Projects id="projects" projects={allProjects} />
       <Skills id="skills" />
       <Experience id="experience" />

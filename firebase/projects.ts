@@ -80,6 +80,14 @@ export interface Education {
     createdAt: Timestamp;
 }
 
+export interface Service {
+    id?: string;
+    title: string;
+    description: string;
+    tools: string[];
+    createdAt: Timestamp;
+}
+
 // Projects CRUD
 export const getProjects = async (): Promise<Project[]> => {
     try {
@@ -265,4 +273,31 @@ export const deleteEducation = async (educationId: string): Promise<void> => {
 export const updateEducation = async (id: string, education: Partial<Education>): Promise<void> => {
     const docRef = doc(db, 'educations', id);
     await updateDoc(docRef, { ...education });
+};
+
+// Services CRUD
+export const getServices = async (): Promise<Service[]> => {
+    const q = query(collection(db, 'services'), orderBy('createdAt', 'asc'));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    } as Service));
+};
+
+export const addService = async (service: Omit<Service, 'id' | 'createdAt'>): Promise<string> => {
+    const docRef = await addDoc(collection(db, 'services'), {
+        ...service,
+        createdAt: Timestamp.now()
+    });
+    return docRef.id;
+};
+
+export const deleteService = async (serviceId: string): Promise<void> => {
+    await deleteDoc(doc(db, 'services', serviceId));
+};
+
+export const updateService = async (id: string, service: Partial<Service>): Promise<void> => {
+    const docRef = doc(db, 'services', id);
+    await updateDoc(docRef, { ...service });
 };

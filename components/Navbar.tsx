@@ -9,6 +9,7 @@ export default function Navbar() {
     const navLinks = [
         { href: '/', label: 'Home' },
         { href: '/#about', label: 'About' },
+        { href: '/#services', label: 'Services' },
         { href: '/#skills', label: 'Skills' },
         { href: '/#experience', label: 'Experience' },
         { href: '/#education', label: 'Education' },
