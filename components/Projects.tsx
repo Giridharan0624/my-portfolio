@@ -1,6 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import ProjectCard from '@/components/ProjectCard';
+import ProjectModal from '@/components/ProjectModal';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 export interface SerializedProject {
@@ -22,6 +24,7 @@ interface ProjectsProps {
 export default function Projects({ id, projects }: ProjectsProps) {
     const header = useScrollReveal<HTMLDivElement>();
     const grid = useScrollReveal<HTMLDivElement>({ threshold: 0.05 });
+    const [selectedProject, setSelectedProject] = useState<SerializedProject | null>(null);
 
     return (
         <section id={id} className="min-h-screen bg-black py-20 border-t border-zinc-900">
@@ -44,7 +47,11 @@ export default function Projects({ id, projects }: ProjectsProps) {
                         className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 stagger-children ${grid.isVisible ? 'revealed' : ''}`}
                     >
                         {projects.map((project) => (
-                            <ProjectCard key={project.id} project={project} />
+                            <ProjectCard
+                                key={project.id}
+                                project={project}
+                                onClick={() => setSelectedProject(project)}
+                            />
                         ))}
                     </div>
                 ) : (
@@ -59,6 +66,14 @@ export default function Projects({ id, projects }: ProjectsProps) {
                     </div>
                 )}
             </div>
+
+            {/* Project Details Modal */}
+            {selectedProject && (
+                <ProjectModal
+                    project={selectedProject}
+                    onClose={() => setSelectedProject(null)}
+                />
+            )}
         </section>
     );
 }
