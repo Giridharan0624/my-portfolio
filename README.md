@@ -1,6 +1,6 @@
 # Modern Portfolio & Admin Dashboard
 
-A premium, high-performance portfolio website built with **Next.js 15**, **Tailwind CSS**, and **Firebase**. Featuring a dark-themed, red-and-black aesthetic with a fully functional admin dashboard for real-time content management.
+A premium, high-performance portfolio website built with **Next.js 15**, **Tailwind CSS**, and **Firebase**. Featuring a dark-themed, red-and-black aesthetic with a fully functional admin dashboard for real-time content management
 
 ## 🚀 Features
 
