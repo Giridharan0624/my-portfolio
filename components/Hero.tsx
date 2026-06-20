@@ -41,7 +41,7 @@ export default function Hero() {
 
                         {/* Title */}
                         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-400 mb-8 hero-title">
-                            Software <span className="text-red-500">Developer</span> & UI/UX <span className="text-red-500">Designer</span>
+                            Aspiring <span className="text-red-500">Software Developer</span>
                         </h2>
 
                         {/* Description */}
@@ -65,7 +65,18 @@ export default function Hero() {
                             >
                                 Contact Me
                             </Link>
+                            <a
+                                href="/resume.pdf"
+                                download
+                                className="px-8 py-4 bg-transparent border-2 border-red-600/50 text-red-400 font-bold rounded-xl hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-300 uppercase tracking-widest hover:scale-105 flex items-center gap-2"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Resume
+                            </a>
                         </div>
+
 
                     </div>
                 </div>

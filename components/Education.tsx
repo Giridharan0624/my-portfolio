@@ -1,38 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { getEducations, Education as EducationType } from '@/firebase/projects';
+import { SerializedEducation } from '@/types';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
-export default function Education({ id }: { id?: string }) {
-    const [educations, setEducations] = useState<EducationType[]>([]);
-    const [loading, setLoading] = useState(true);
+export default function Education({ id, educations = [] }: { id?: string; educations: SerializedEducation[] }) {
     const header = useScrollReveal<HTMLDivElement>();
     const grid = useScrollReveal<HTMLDivElement>({ threshold: 0.1 });
-
-    useEffect(() => {
-        const fetchEducations = async () => {
-            try {
-                const data = await getEducations();
-                setEducations(data);
-            } catch (error) {
-                console.error('Error fetching educations:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchEducations();
-    }, []);
-
-    if (loading) {
-        return (
-            <section id={id} className="py-20 bg-black">
-                <div className="max-w-7xl auto px-4 text-center">
-                    <div className="animate-pulse text-red-600 font-bold uppercase tracking-widest">Loading Education...</div>
-                </div>
-            </section>
-        );
-    }
 
     return (
         <section id={id} className="py-24 bg-zinc-950 relative overflow-hidden">

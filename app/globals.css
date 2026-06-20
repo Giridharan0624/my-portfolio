@@ -124,6 +124,13 @@ body {
   100% { background-position: 200% 0; }
 }
 
+.shimmer-effect {
+  background: linear-gradient(90deg, #09090b 25%, #1e1111 50%, #09090b 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite linear;
+}
+
+
 /* ========================
    ANIMATION UTILITY CLASSES
    ======================== */

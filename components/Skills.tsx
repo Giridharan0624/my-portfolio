@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { getSkills, Skill } from '@/firebase/projects';
+import { useState } from 'react';
+import { SerializedSkill } from '@/types';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 /**
@@ -85,23 +85,10 @@ function SkillLogo({ name }: { name: string }) {
     );
 }
 
-export default function Skills({ id }: { id?: string }) {
-    const [skills, setSkills] = useState<Skill[]>([]);
+export default function Skills({ id, skills }: { id?: string; skills: SerializedSkill[] }) {
     const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
     const header = useScrollReveal<HTMLDivElement>();
     const grid = useScrollReveal<HTMLDivElement>({ threshold: 0.05 });
-
-    useEffect(() => {
-        const fetchSkills = async () => {
-            try {
-                const fetchedSkills = await getSkills();
-                setSkills(fetchedSkills);
-            } catch (error) {
-                console.error('Error fetching skills:', error);
-            }
-        };
-        fetchSkills();
-    }, []);
 
     return (
         <section id={id} className="bg-black text-white py-24 relative overflow-hidden">

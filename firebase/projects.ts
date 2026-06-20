@@ -10,6 +10,7 @@ import {
     Timestamp
 } from 'firebase/firestore';
 import { db } from './config';
+import { Project, Message, Skill, Experience, Education, Service } from '@/types';
 
 export const uploadImage = async (file: File): Promise<string> => {
     try {
@@ -36,57 +37,6 @@ export const uploadImage = async (file: File): Promise<string> => {
         throw error;
     }
 };
-
-export interface Project {
-    id?: string;
-    title: string;
-    description: string;
-    image: string;
-    github: string;
-    demo: string;
-    tech: string[];
-    createdAt: Timestamp;
-}
-
-export interface Message {
-    id?: string;
-    name: string;
-    email: string;
-    message: string;
-    createdAt: Timestamp;
-}
-
-export interface Skill {
-    id?: string;
-    name: string;
-    createdAt: Timestamp;
-}
-
-export interface Experience {
-    id?: string;
-    role: string;
-    company: string;
-    period: string;
-    description: string;
-    createdAt: Timestamp;
-}
-
-export interface Education {
-    id?: string;
-    degree: string;
-    school: string;
-    period: string;
-    description: string;
-    createdAt: Timestamp;
-}
-
-export interface Service {
-    id?: string;
-    title: string;
-    description: string;
-    tools: string[];
-    createdAt: Timestamp;
-}
 
 // Projects CRUD
 export const getProjects = async (): Promise<Project[]> => {

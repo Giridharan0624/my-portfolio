@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { SerializedProject } from '@/components/Projects';
+import { SerializedProject } from '@/types';
 
 interface ProjectCardProps {
     project: SerializedProject;

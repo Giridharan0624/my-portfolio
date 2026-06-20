@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { getServices, Service as FirestoreService } from '@/firebase/projects';
+import { SerializedService } from '@/types';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 interface ServiceDisplay {
@@ -59,30 +58,18 @@ function getIconForTitle(title: string): React.ReactNode {
     return SERVICE_ICONS.default;
 }
 
-export default function Services({ id }: { id?: string }) {
-    const [services, setServices] = useState<ServiceDisplay[]>([]);
+export default function Services({ id, services: rawServices = [] }: { id?: string; services: SerializedService[] }) {
     const header = useScrollReveal<HTMLDivElement>();
     const grid = useScrollReveal<HTMLDivElement>({ threshold: 0.05 });
 
-    useEffect(() => {
-        const fetchServices = async () => {
-            try {
-                const fetched = await getServices();
-                const mapped: ServiceDisplay[] = fetched.map((s, i) => ({
-                    id: s.id || String(i),
-                    title: s.title,
-                    description: s.description,
-                    tools: s.tools,
-                    icon: getIconForTitle(s.title),
-                    accent: ACCENTS[i % ACCENTS.length],
-                }));
-                setServices(mapped);
-            } catch (error) {
-                console.error('Error fetching services:', error);
-            }
-        };
-        fetchServices();
-    }, []);
+    const services: ServiceDisplay[] = rawServices.map((s, i) => ({
+        id: s.id || String(i),
+        title: s.title,
+        description: s.description,
+        tools: s.tools,
+        icon: getIconForTitle(s.title),
+        accent: ACCENTS[i % ACCENTS.length],
+    }));
 
     if (services.length === 0) return null;
 

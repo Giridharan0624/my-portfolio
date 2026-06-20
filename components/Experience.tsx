@@ -1,46 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { getExperiences, Experience as ExperienceType } from '@/firebase/projects';
+import { SerializedExperience } from '@/types';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
-export default function Experience({ id }: { id?: string }) {
-    const [experiences, setExperiences] = useState<ExperienceType[]>([]);
-    const [loading, setLoading] = useState(true);
+export default function Experience({ id, experiences = [] }: { id?: string; experiences: SerializedExperience[] }) {
     const header = useScrollReveal<HTMLDivElement>();
     const timeline = useScrollReveal<HTMLDivElement>({ threshold: 0.05 });
 
-    useEffect(() => {
-        const fetchExperiences = async () => {
-            try {
-                const data = await getExperiences();
-                setExperiences(data);
-            } catch (error) {
-                console.error('Error fetching experiences:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchExperiences();
-    }, []);
-
-    if (loading) {
-        return (
-            <section id={id} className="py-20 bg-black">
-                <div className="max-w-7xl mx-auto px-4 text-center">
-                    <div className="animate-pulse text-red-600 font-bold uppercase tracking-widest">Loading Experience...</div>
-                </div>
-            </section>
-        );
-    }
-
     // Sort: newest first (top), oldest last (bottom)
-    const sorted = [...experiences].sort((a, b) => {
-        if (a.createdAt && b.createdAt) {
-            return b.createdAt.toMillis() - a.createdAt.toMillis();
-        }
-        return 0;
-    });
+    const sorted = [...experiences].sort((a, b) => b.createdAt - a.createdAt);
 
     return (
         <section id={id} className="py-24 bg-black relative overflow-hidden">

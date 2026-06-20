@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useEffect, useRef } from 'react';
-import { SerializedProject } from '@/components/Projects';
+import { SerializedProject } from '@/types';
 
 interface ProjectModalProps {
     project: SerializedProject;
